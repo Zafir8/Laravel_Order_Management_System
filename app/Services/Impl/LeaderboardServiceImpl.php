@@ -3,6 +3,7 @@
 namespace App\Services\Impl;
 
 use App\Models\Order;
+use App\Models\Refund;
 use App\Services\LeaderboardService;
 use Illuminate\Support\Facades\Redis;
 
@@ -26,6 +27,15 @@ class LeaderboardServiceImpl implements LeaderboardService
         }
 
         Redis::zincrby($this->key, $order->total_cents, (string) $order->customer_id);
+    }
+
+        /**
+     * Adjust the customer's leaderboard score downward
+     * when a refund is processed.
+     */
+    public function adjustCustomerScoreForRefund(int $customerId, int $refundAmountCents): void
+    {
+        Redis::zincrby($this->key, -$refundAmountCents, (string) $customerId);
     }
 
     /**

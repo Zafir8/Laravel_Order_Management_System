@@ -20,12 +20,23 @@ interface KpiService
     public function trackFinalized(Order $order, ?CarbonInterface $when = null): void;
 
     /**
+     * Track refund metrics - subtract from revenue and track refund data.
+     *
+     * @param string $day Date in Y-m-d format
+     * @param int $refundAmountCents Amount refunded in cents
+     */
+    public function trackRefund(string $day, int $refundAmountCents): void;
+
+    /**
      * Retrieve KPIs for a given day.
      *
      * @param CarbonInterface|null $day  Defaults to today
      * @return array{
      *   revenue_cents: int,
      *   order_count: int,
+     *   refund_count: int,
+     *   refund_amount_cents: int,
+     *   gross_revenue_cents: int,
      *   average_order_value_cents: int
      * }
      */

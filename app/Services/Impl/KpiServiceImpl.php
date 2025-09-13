@@ -31,6 +31,24 @@ class KpiServiceImpl implements KpiService
     }
 
     /**
+     * Track refund - subtract from revenue and track refund metrics.
+     */
+    public function trackRefund(string $day, int $refundAmountCents): void
+    {
+        $key = $this->kpiKey($day);
+
+        // Subtract refunded amount from revenue
+        Redis::hincrby($key, 'revenue_cents', -$refundAmountCents);
+        
+        // Track refund-specific metrics
+        Redis::hincrby($key, 'refund_count', 1);
+        Redis::hincrby($key, 'refund_amount_cents', $refundAmountCents);
+
+        // set TTL so data eventually expires (optional, e.g., 90 days)
+        Redis::expire($key, 60 * 60 * 24 * 90);
+    }
+
+    /**
      * Retrieve KPIs for a given day.
      */
     public function getDailyKpis(?CarbonInterface $day = null): array
@@ -42,11 +60,16 @@ class KpiServiceImpl implements KpiService
 
         $revenue = (int)($data['revenue_cents'] ?? 0);
         $count   = (int)($data['order_count'] ?? 0);
-        $aov     = $count > 0 ? intdiv($revenue, $count) : 0;
+        $refundCount = (int)($data['refund_count'] ?? 0);
+        $refundAmount = (int)($data['refund_amount_cents'] ?? 0);
+        $aov     = $count > 0 ? intdiv($revenue + $refundAmount, $count) : 0; // AOV based on gross revenue
 
         return [
-            'revenue_cents'             => $revenue,
+            'revenue_cents'             => $revenue, // Net revenue after refunds
             'order_count'               => $count,
+            'refund_count'              => $refundCount,
+            'refund_amount_cents'       => $refundAmount,
+            'gross_revenue_cents'       => $revenue + $refundAmount,
             'average_order_value_cents' => $aov,
         ];
     }

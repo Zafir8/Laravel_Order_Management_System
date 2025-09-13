@@ -19,6 +19,15 @@ interface LeaderboardService
     public function bumpCustomerScore(Order $order): void;
 
     /**
+     * Adjust the customer's leaderboard score downward
+     * when a refund is processed.
+     *
+     * @param int $customerId
+     * @param int $refundAmountCents
+     */
+    public function adjustCustomerScoreForRefund(int $customerId, int $refundAmountCents): void;
+
+    /**
      * Fetch the top N customers ranked by revenue.
      *
      * @param int $limit

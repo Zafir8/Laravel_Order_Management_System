@@ -36,12 +36,12 @@ class UpsertAndProcessOrderJob implements ShouldQueue
     public function handle(OrderWorkflowService $workflowService): void
     {
         try {
-            // Build payload from CSV row
+            // Build payload from transformed CSV data
             $orderPayload = [
                 'external_ref' => $this->rowData['external_ref'],
                 'customer_id'  => $this->rowData['customer_id'],
                 'total_cents'  => (int)$this->rowData['total_cents'],
-                'items'        => $this->parseItems($this->rowData['items']),
+                'items'        => $this->normalizeItems($this->rowData['items']),
             ];
 
             // 1. Upsert order + items
@@ -60,6 +60,26 @@ class UpsertAndProcessOrderJob implements ShouldQueue
             Log::error("Failed processing order in batch {$this->batchId}: {$e->getMessage()}");
             throw $e;
         }
+    }
+
+    /**
+     * Normalize items data - handle both array and string formats
+     */
+    private function normalizeItems($items): array
+    {
+        if (is_array($items)) {
+            // New format: already an array of items
+            return array_map(function($item) {
+                return [
+                    'product_id' => (int)$item['product_id'],
+                    'quantity' => (int)$item['quantity'],
+                    'price_cents' => (int)($item['unit_price_cents'] ?? $item['price_cents']),
+                ];
+            }, $items);
+        }
+        
+        // Legacy format: string that needs parsing
+        return $this->parseItems($items);
     }
 
     /**

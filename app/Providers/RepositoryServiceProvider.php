@@ -11,6 +11,7 @@ use App\Services\InventoryService;
 use App\Services\PaymentService;
 use App\Services\KpiService;
 use App\Services\LeaderboardService;
+use App\Services\RefundService;
 
 // Service Implementations
 use App\Services\Impl\OrderImportServiceImpl;
@@ -19,6 +20,7 @@ use App\Services\Impl\InventoryServiceImpl;
 use App\Services\Impl\PaymentServiceImpl;
 use App\Services\Impl\KpiServiceImpl;
 use App\Services\Impl\LeaderboardServiceImpl;
+use App\Services\Impl\RefundServiceImpl;
 
 // Repositories
 use App\Repositories\OrderRepository;
@@ -43,6 +45,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PaymentService::class, PaymentServiceImpl::class);
         $this->app->bind(KpiService::class, KpiServiceImpl::class);
         $this->app->bind(LeaderboardService::class, LeaderboardServiceImpl::class);
+        $this->app->bind(RefundService::class, RefundServiceImpl::class);
 
         // Bind repositories
         $this->app->bind(OrderRepository::class, OrderRepositoryImpl::class);
