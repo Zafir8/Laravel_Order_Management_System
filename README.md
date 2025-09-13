@@ -1,4 +1,17 @@
 # Laravel Order Management System
+
+A robust order │  ┌─────────────────────────┼────────────────────────────────────────┐ │ │
+│  │           MySQL Database (Transactional Data)                   │ │ │
+│  │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐   │ │ │
+│  │  │Customers│ │ Orders  │ │Products │ │Refunds  │ │  Notif. │   │ │ │
+│  │  └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘   │ │ │
+│  │  └──────────────────────────────────────────────────────────────── │ │ │ment system built with Laravel 12, featuring asynchronous processing, real-time analytics, and comprehensive queue management with Laravel Horizon.
+
+## 🚀 Overview
+
+This system was developed as a Software Engineer Level 2 technical assignment, implementing a complete order lifecycle management solution with CSV import capabilities, automated workflows, real-time notifications, and Redis-powered analytics.
+
+## 📊 System Diagram
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           Laravel Order Management System                    │
@@ -118,7 +131,7 @@
 - **PHP 8.2+** - Latest PHP version for optimal performance
 
 ### **Database & Storage**
-- **MySQL** - Primary database for transactional data (`ordersystem` database)
+- **MySQL** - Primary database for transactional data (`ordersys` database)
 - **Redis** - Queue management and analytics storage
 - **File Storage** - Local storage for CSV files
 
@@ -163,13 +176,13 @@
 - Composer
 - MySQL 8.0+
 - Redis
-- 
+- Node.js & npm (for frontend assets)
 ```
 
 ### **Setup Steps**
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/Zafir8/Laravel_Order_Management_System.git
 cd assignment
 
 # Install PHP dependencies
@@ -187,14 +200,14 @@ php artisan key:generate
 # Configure database and Redis in .env file
 # DB_CONNECTION=mysql
 # DB_HOST=127.0.0.1
-# DB_DATABASE=ordersystem
+# DB_DATABASE=ordersys
 # DB_USERNAME=root
 # DB_PASSWORD=your_password
 # REDIS_HOST=127.0.0.1
 # QUEUE_CONNECTION=redis
 
 # Create MySQL database
-mysql -u root -p -e "CREATE DATABASE ordersystem;"
+mysql -u root -p -e "CREATE DATABASE ordersys;"
 
 # Run database migrations
 php artisan migrate
@@ -369,4 +382,4 @@ This project follows Laravel best practices and PSR standards. Key principles:
 
 ---
 
-**Built with ❤️ using Laravel 11 and modern PHP practices**
+**Built with ❤️ using Laravel 12 and modern PHP practices**
