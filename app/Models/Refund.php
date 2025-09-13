@@ -32,6 +32,7 @@ class Refund extends Model
     const STATUS_PENDING = 'pending';
     const STATUS_PROCESSED = 'processed';
     const STATUS_FAILED = 'failed';
+    const STATUS_SKIPPED = 'skipped';
 
     public function order(): BelongsTo
     {
