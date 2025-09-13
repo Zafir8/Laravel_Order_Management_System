@@ -2,6 +2,8 @@
 
 namespace App\Services\Impl;
 
+use App\Jobs\SendOrderNotificationJob;
+use App\Models\Notification;
 use App\Models\Order;
 use App\Services\OrderWorkflowService;
 use App\Services\InventoryService;
@@ -85,8 +87,21 @@ class OrderWorkflowServiceImpl implements OrderWorkflowService
 
         if ($success) {
             $this->finalize($order);
+            // Send payment success notification
+            SendOrderNotificationJob::dispatch(
+                $order,
+                Notification::TYPE_PAYMENT_SUCCESS,
+                Notification::CHANNEL_LOG
+            );
         } else {
             $this->rollback($order, $reason ?? 'Payment failed');
+            // Send payment failure notification
+            SendOrderNotificationJob::dispatch(
+                $order,
+                Notification::TYPE_PAYMENT_FAILURE,
+                Notification::CHANNEL_LOG,
+                $reason ?? 'Payment failed'
+            );
         }
     }
 
@@ -104,6 +119,13 @@ class OrderWorkflowServiceImpl implements OrderWorkflowService
             $this->kpiService->trackFinalized($order);
             $this->leaderboardService->bumpCustomerScore($order);
         });
+
+        // Send order success notification
+        SendOrderNotificationJob::dispatch(
+            $order,
+            Notification::TYPE_ORDER_SUCCESS,
+            Notification::CHANNEL_LOG
+        );
     }
 
     /**
@@ -119,5 +141,13 @@ class OrderWorkflowServiceImpl implements OrderWorkflowService
 
             // optionally log $reason somewhere
         });
+
+        // Send order failure notification
+        SendOrderNotificationJob::dispatch(
+            $order,
+            Notification::TYPE_ORDER_FAILURE,
+            Notification::CHANNEL_LOG,
+            $reason
+        );
     }
 }

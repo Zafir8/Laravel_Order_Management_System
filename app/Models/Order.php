@@ -30,6 +30,10 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function notifications(): HasMany {
+        return $this->hasMany(Notification::class);
+    }
+
     public function isTerminal(): bool {
         return in_array($this->status, [self::S_FINALIZED, self::S_FAILED], true);
     }
