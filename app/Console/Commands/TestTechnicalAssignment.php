@@ -364,16 +364,13 @@ class TestTechnicalAssignment extends Command
             $this->newLine();
             $this->info("🏆 TOP CUSTOMERS LEADERBOARD:");
             $leaderboardKey = 'leaderboard:customers';
-            $leaderboard = Redis::zrevrange($leaderboardKey, 0, 4, 'WITHSCORES');
+            $leaderboard = Redis::zrevrange($leaderboardKey, 0, 4, ['withscores' => true]);
             
             if (empty($leaderboard)) {
                 $this->line("   📋 No customers in leaderboard yet");
             } else {
-                for ($i = 0; $i < count($leaderboard); $i += 2) {
-                    $customerId = $leaderboard[$i] ?? 'Unknown';
-                    $score = $leaderboard[$i + 1] ?? 0;
-                    $rank = ($i / 2) + 1;
-                    
+                $rank = 1;
+                foreach ($leaderboard as $customerId => $score) {
                     // Get customer name
                     try {
                         $customer = \App\Models\Customer::find($customerId);
@@ -383,6 +380,7 @@ class TestTechnicalAssignment extends Command
                     }
                     
                     $this->line("   {$rank}. {$customerName}: $" . number_format($score / 100, 2));
+                    $rank++;
                 }
             }
             
